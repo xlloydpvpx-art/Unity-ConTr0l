@@ -24,7 +24,7 @@ assert "all.filter(" not in app, "Diagnostics must not reference the removed glo
 assert "function summarizeFindings(inventory)" in app and "inventory.flatMap" in app, "Diagnostics must aggregate per-device findings"
 assert (root/"Assets/UNIFY_CONTROL.ico").is_file(), "Application icon missing"
 version=(root/"VERSION").read_text().strip()
-assert version == "1.7.0", f"Unexpected release version: {version}"
+assert version == "1.8.0", f"Unexpected release version: {version}"
 print("Frontend release invariants passed.")
 PYVALIDATE
 echo 'UNIFY CONTROL portable validation passed.'

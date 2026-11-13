@@ -1,4 +1,4 @@
-UNIFY CONTROL 1.7.0
+UNIFY CONTROL 1.8.0
 Release type: Windows x64 build pipeline and diagnostics hardening
 Base: UNIFY CONTROL 1.6.0
 Language: C++20

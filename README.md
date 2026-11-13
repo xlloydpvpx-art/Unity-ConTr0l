@@ -1,4 +1,4 @@
-# UNIFY CONTROL 1.7.0
+# UNIFY CONTROL 1.8.0
 
 **Windows 10/11 x64 · C++20 · SetupAPI/HID · WinUSB · Bluetooth LE GATT · WebView2**
 

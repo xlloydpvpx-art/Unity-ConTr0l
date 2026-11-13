@@ -1,5 +1,5 @@
 #define AppName "UNIFY CONTROL"
-#define AppVersion "1.7.0"
+#define AppVersion "1.8.0"
 #define AppPublisher "UNIFY CONTROL"
 #define AppExeName "UNIFY_CONTROL.exe"
 

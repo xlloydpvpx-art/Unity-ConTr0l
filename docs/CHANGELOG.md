@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.8.0
+- Fixed Windows build: added objbase.h and initguid.h to the HID scanner, and replaced WinRT range-for loops with indexed loops in BLE discovery.
+- Device list now groups HID interfaces of the same physical device (same Container ID) into one row, showing interface numbers.
+- Added Attack Shark R5 Ultra (observed VID 373E / PID 0047) to the research catalog and adapter research queue as RESEARCH_REQUIRED. No public protocol documentation was found; all writes remain locked.
+- Installer: desktop shortcut selected by default and Start Menu uninstall entry.
+- Frontend regression test for interface grouping.
+
+
+## 1.7.0
+- Fixed the Diagnostics page reference error; added application icon, WebView2 Evergreen bootstrapper packaging and the Windows x64 GitHub Actions pipeline.
+
 ## 1.6.0 — WinUSB endpoints and Bluetooth LE GATT discovery
 - Added Windows WinUSB initialization for standard USB device-interface paths and metadata-only enumeration of interfaces, alternate settings and endpoint pipes.
 - Added Windows C++/WinRT Bluetooth LE enumeration of Windows-visible devices, GATT service UUIDs and characteristic UUID/property flags, with a bounded wait and isolated failures.

@@ -505,5 +505,5 @@ int main() {
     for(const auto& finding:conflictFindings) { if(finding.code==L"IDENTITY_CONFLICT") sawConflict=true; if(finding.code==L"ADAPTER_PROTOCOL_UNVERIFIED") sawUnverified=true; }
     assert(sawConflict && sawUnverified);
 
-    std::cout << "UNIFY CONTROL v1.7.0: core, HID/USB parsers, WinUSB/GATT metadata fixtures, transport registry, evidence engine, diagnostics, database and adapter SDK tests passed\n";
+    std::cout << "UNIFY CONTROL v1.8.0: core, HID/USB parsers, WinUSB/GATT metadata fixtures, transport registry, evidence engine, diagnostics, database and adapter SDK tests passed\n";
 }

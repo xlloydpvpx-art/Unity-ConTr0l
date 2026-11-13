@@ -1,0 +1,360 @@
+{
+  "schemaVersion": 3,
+  "databaseVersion": "1.1.0",
+  "updatedAt": "2026-11-12",
+  "policy": "Manufacturer catalog entries are discovery hints only. No VID/PID or configurable capability is asserted without verified evidence.",
+  "devices": [],
+  "manufacturers": [
+    {
+      "name": "Unknown / OEM",
+      "aliases": [
+        "Generic HID",
+        "Unbranded",
+        "White label",
+        "ODM"
+      ],
+      "status": "IDENTIFICATION_ONLY"
+    },
+    {
+      "name": "Logitech",
+      "aliases": [
+        "Logi"
+      ],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Razer",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Corsair",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "SteelSeries",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "HyperX",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "ASUS",
+      "aliases": [
+        "ROG"
+      ],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "MSI",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Acer",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Dell",
+      "aliases": [
+        "Alienware"
+      ],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "HP",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Lenovo",
+      "aliases": [
+        "Legion"
+      ],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Cooler Master",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Glorious",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Wooting",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Keychron",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Ducky",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Varmilo",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Cherry",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Endgame Gear",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Finalmouse",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Pulsar",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Lamzu",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Vaxee",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Redragon",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Ajazz",
+      "aliases": [
+        "Ajazz AK"
+      ],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "AULA",
+      "aliases": [
+        "Aula F",
+        "Aula WIN"
+      ],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Attack Shark",
+      "aliases": [
+        "ATTACK SHARK"
+      ],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Darmoshark",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "VGN",
+      "aliases": [
+        "VXE"
+      ],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "ATK",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "MCHOSE",
+      "aliases": [
+        "迈从"
+      ],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Machenike",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Dareu",
+      "aliases": [
+        "达尔优"
+      ],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Rapoo",
+      "aliases": [
+        "雷柏"
+      ],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Motospeed",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Royal Kludge",
+      "aliases": [
+        "RK"
+      ],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Epomaker",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Akko",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "MonsGeek",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Leobog",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Yunzii",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Zuoya",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Womier",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "FL-ESPORTS",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "KZZI",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Langtu",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "E-YOOSO",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "MageGee",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "SayoDevice",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Waizowl",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Incott",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Fantech",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Delux",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Skyloong",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "CIDOO",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Feker",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Weikav",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Tecware",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Havit",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "MIIIW",
+      "aliases": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "name": "Xiaomi",
+      "aliases": [
+        "小米"
+      ],
+      "status": "CATALOG_ONLY"
+    }
+  ],
+  "deviceRecordSchema": {
+    "vid": "decimal JSON integer representing the USB vendor ID (1-65535)",
+    "pid": "decimal JSON integer representing the USB product ID (1-65535)",
+    "revision": "optional decimal JSON integer matching the USB/HID bcdDevice revision",
+    "manufacturer": "verified manufacturer name",
+    "model": "verified retail model name",
+    "evidence": "non-empty source/documentation identifier or URL supporting the mapping",
+    "status": "must equal VERIFIED for exact model matching"
+  }
+}

@@ -12,4 +12,13 @@ assert.deepEqual(JSON.parse(JSON.stringify(summarizeFindings([
   {}
 ]))), { total: 4, errors: 1, warnings: 2 });
 assert.deepEqual(JSON.parse(JSON.stringify(summarizeFindings([]))), { total: 0, errors: 0, warnings: 0 });
+const gm = source.match(/function groupInterfaces\(list\)\s*\{[^\n]*\}/);
+assert.ok(gm, 'groupInterfaces must exist in app.js');
+const groupInterfaces = vm.runInNewContext(`(${gm[0]})`);
+const mk = (iface, c) => ({ vid: '373E', pid: '0047', product: 'R5', containerId: c, deviceType: 'Mouse', interfaceNumber: iface });
+const grouped = groupInterfaces([mk(0, '{A}'), mk(1, '{A}'), mk(0, '{B}'), mk(0, ''), mk(0, '')]);
+assert.equal(grouped.length, 4, 'same container merges; missing container never merges');
+assert.equal(grouped[0].interfaces.length, 2);
+assert.equal(groupInterfaces(null).length, 0);
 console.log('Frontend diagnostics aggregation tests passed.');
+console.log('Frontend interface grouping tests passed.');

@@ -54,25 +54,25 @@ jobs:
 
       - name: Create portable release ZIP
         shell: pwsh
-        run: Compress-Archive -Path '.\dist\UNIFY_CONTROL_RELEASE\*' -DestinationPath '.\dist\UNIFY_CONTROL_1.7.0_Windows_x64.zip' -Force
+        run: Compress-Archive -Path '.\dist\UNIFY_CONTROL_RELEASE\*' -DestinationPath '.\dist\UNIFY_CONTROL_1.8.0_Windows_x64.zip' -Force
 
       - name: Create source ZIP
         shell: pwsh
         run: |
           $exclude = @('.git', 'build', 'build-validation', 'packages', 'dist')
-          Get-ChildItem -Force | Where-Object { $_.Name -notin $exclude } | Compress-Archive -DestinationPath '.\dist\UNIFY_CONTROL_1.7.0_SOURCE.zip' -Force
+          Get-ChildItem -Force | Where-Object { $_.Name -notin $exclude } | Compress-Archive -DestinationPath '.\dist\UNIFY_CONTROL_1.8.0_SOURCE.zip' -Force
 
       - name: Write Windows build report
         shell: pwsh
         run: |
           @"
-          UNIFY CONTROL 1.7.0 — Windows x64 CI report
+          UNIFY CONTROL 1.8.0 — Windows x64 CI report
           Runner: $env:ImageOS / $env:ImageVersion
           Compiler: MSVC x64
           Configuration: Release
           CTest: passed (workflow step completed)
           Application: dist/UNIFY_CONTROL_RELEASE/UNIFY_CONTROL.exe
-          Installer: dist/UNIFY_CONTROL_Setup_1.7.0_x64.exe
+          Installer: dist/UNIFY_CONTROL_Setup_1.8.0_x64.exe
           Runtime: WebView2 Evergreen bootstrapper bundled
           Physical peripheral tests: NOT PERFORMED by CI
           "@ | Set-Content '.\dist\WINDOWS_BUILD_REPORT.txt'
@@ -80,12 +80,12 @@ jobs:
       - name: Upload release artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: UNIFY_CONTROL_1.7.0_Windows_x64
+          name: UNIFY_CONTROL_1.8.0_Windows_x64
           path: |
             dist/UNIFY_CONTROL_RELEASE/**
-            dist/UNIFY_CONTROL_Setup_1.7.0_x64.exe
-            dist/UNIFY_CONTROL_1.7.0_Windows_x64.zip
-            dist/UNIFY_CONTROL_1.7.0_SOURCE.zip
+            dist/UNIFY_CONTROL_Setup_1.8.0_x64.exe
+            dist/UNIFY_CONTROL_1.8.0_Windows_x64.zip
+            dist/UNIFY_CONTROL_1.8.0_SOURCE.zip
             dist/WINDOWS_BUILD_REPORT.txt
           if-no-files-found: error
           retention-days: 30

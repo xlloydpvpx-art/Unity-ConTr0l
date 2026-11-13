@@ -61,6 +61,26 @@
       "protocolEvidence": [],
       "physicalTests": false,
       "notes": "Different retail names may share an ODM design, while identical names may ship different revisions. Never infer protocol compatibility from appearance or seller name."
+    },
+    {
+      "id": "attack-shark-r5-ultra",
+      "category": "mouse",
+      "technology": "Wireless optical gaming mouse (vendor lists PAW3950MAX sensor)",
+      "desiredCapabilities": [
+        "DPI",
+        "POLLING_RATE",
+        "LIFT_OFF_DISTANCE",
+        "BUTTON_REMAP"
+      ],
+      "status": "RESEARCH_REQUIRED",
+      "model": "R5 Ultra",
+      "vid": "373E",
+      "pid": "0047",
+      "revision": null,
+      "firmwareRange": null,
+      "protocolEvidence": [],
+      "physicalTests": false,
+      "notes": "VID/PID observed by UNIFY CONTROL discovery on one host with the 2.4 GHz receiver. Not a compatibility claim. No public protocol documentation found; configuration is described by the vendor as a web driver. Do not probe vendor reports or write settings."
     }
   ]
 }

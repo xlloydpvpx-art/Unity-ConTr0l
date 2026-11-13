@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Research queue only. Entries are not adapters and do not enable hardware operations.",
+  "policy": "No manufacturer or model is declared compatible without exact VID/PID/revision/firmware identity, protocol evidence and repeatable physical tests.",
+  "targets": [
+    {
+      "id": "hall-effect-keyboards",
+      "category": "keyboard",
+      "technology": "Hall Effect magnetic switches",
+      "desiredCapabilities": [
+        "ADJUSTABLE_ACTUATION",
+        "RAPID_TRIGGER",
+        "SOCD",
+        "DKS",
+        "KEY_REMAP",
+        "RGB"
+      ],
+      "status": "RESEARCH_REQUIRED",
+      "model": null,
+      "vid": null,
+      "pid": null,
+      "revision": null,
+      "firmwareRange": null,
+      "protocolEvidence": [],
+      "physicalTests": false,
+      "notes": "HE switch technology does not imply a shared host protocol. Do not probe vendor reports or write settings based on category alone."
+    },
+    {
+      "id": "gaming-mice",
+      "category": "mouse",
+      "technology": "Optical sensor gaming mouse",
+      "desiredCapabilities": [
+        "DPI",
+        "POLLING_RATE",
+        "LIFT_OFF_DISTANCE",
+        "DEBOUNCE_TIME",
+        "BUTTON_REMAP",
+        "RGB"
+      ],
+      "status": "RESEARCH_REQUIRED",
+      "model": null,
+      "vid": null,
+      "pid": null,
+      "revision": null,
+      "firmwareRange": null,
+      "protocolEvidence": [],
+      "physicalTests": false,
+      "notes": "Sensor family and retail brand do not establish a common configuration protocol. Exact device identity and documented transport are required."
+    },
+    {
+      "id": "oem-odm-white-label",
+      "category": "keyboard_mouse",
+      "technology": "OEM/ODM and rebranded products",
+      "desiredCapabilities": [],
+      "status": "IDENTITY_REQUIRED",
+      "model": null,
+      "vid": null,
+      "pid": null,
+      "revision": null,
+      "firmwareRange": null,
+      "protocolEvidence": [],
+      "physicalTests": false,
+      "notes": "Different retail names may share an ODM design, while identical names may ship different revisions. Never infer protocol compatibility from appearance or seller name."
+    }
+  ]
+}
