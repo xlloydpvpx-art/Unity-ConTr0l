@@ -6,8 +6,9 @@
 #include <hidsdi.h>
 #include <hidpi.h>
 #include <cfgmgr32.h>
-#include <devpkey.h>
 #include <usbiodef.h>
+#include <initguid.h>
+#include <devpkey.h>
 #include <algorithm>
 #include <cwctype>
 #include <filesystem>
