@@ -1,6 +1,7 @@
 #include "unify/device_scanner.hpp"
 #include "unify/windows_transport_discovery.hpp"
 #include <windows.h>
+#include <objbase.h>
 #include <setupapi.h>
 #include <hidsdi.h>
 #include <hidpi.h>

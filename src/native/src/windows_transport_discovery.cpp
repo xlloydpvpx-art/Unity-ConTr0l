@@ -4,6 +4,7 @@
 #include <winusb.h>
 #include <setupapi.h>
 #include <usbiodef.h>
+#include <unknwn.h>
 #include <winrt/base.h>
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
@@ -55,7 +56,8 @@ void scanGattOnWorker(std::vector<DeviceInfo>& out) {
         using namespace winrt::Windows::Devices::Bluetooth::GenericAttributeProfile;
         const auto selector=BluetoothLEDevice::GetDeviceSelector();
         const auto found=DeviceInformation::FindAllAsync(selector).get();
-        for (const auto& info:found) {
+        for (std::uint32_t foundIndex=0; foundIndex<found.Size(); ++foundIndex) {
+            const auto info=found.GetAt(foundIndex);
             if(out.size()>=4096) break;
             DeviceInfo device;
             device.instanceId=info.Id().c_str();
@@ -75,13 +77,17 @@ void scanGattOnWorker(std::vector<DeviceInfo>& out) {
                 std::size_t totalCharacteristics=0;
                 bool truncated=false;
                 bool partial=false;
-                for(const auto& service:result.Services()) {
+                const auto gattServiceList=result.Services();
+                for(std::uint32_t serviceIndex=0; serviceIndex<gattServiceList.Size(); ++serviceIndex) {
+                    const auto service=gattServiceList.GetAt(serviceIndex);
                     if(services.size()>=512) { truncated=true; break; }
                     transport::GattService item;
                     item.uuid=winrt::to_hstring(service.Uuid()).c_str();
                     const auto chars=service.GetCharacteristicsAsync(BluetoothCacheMode::Uncached).get();
                     if(chars.Status()==GattCommunicationStatus::Success) {
-                        for(const auto& characteristic:chars.Characteristics()) {
+                        const auto characteristicList=chars.Characteristics();
+                        for(std::uint32_t charIndex=0; charIndex<characteristicList.Size(); ++charIndex) {
+                            const auto characteristic=characteristicList.GetAt(charIndex);
                             if(item.characteristics.size()>=2048 || totalCharacteristics>=4096) { truncated=true; break; }
                             item.characteristics.push_back({winrt::to_hstring(characteristic.Uuid()).c_str(),
                                 static_cast<std::uint32_t>(characteristic.CharacteristicProperties())});
