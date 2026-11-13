@@ -43,24 +43,59 @@ std::vector<std::wstring> objectsIn(const std::wstring& json, const std::wstring
     }
     return result;
 }
+// Manual scanner: MSVC std::regex throws regex_error(error_stack) on long strings
+// (its backtracking stack is capped at ~1000 frames), which terminated the process.
+std::wstring rawStringField(const std::wstring& obj,const std::wstring& key) {
+    const std::wstring needle=L"\""+key+L"\"";
+    for(std::size_t p=obj.find(needle); p!=std::wstring::npos; p=obj.find(needle,p+1)) {
+        std::size_t i=p+needle.size();
+        while(i<obj.size() && iswspace(obj[i])) ++i;
+        if(i>=obj.size() || obj[i]!=L':') continue;
+        ++i;
+        while(i<obj.size() && iswspace(obj[i])) ++i;
+        if(i>=obj.size() || obj[i]!=L'"') continue;
+        ++i;
+        std::wstring out;
+        for(; i<obj.size(); ++i) {
+            if(obj[i]==L'\\') { out+=obj[i]; if(++i>=obj.size()) return {}; out+=obj[i]; }
+            else if(obj[i]==L'"') return out;
+            else out+=obj[i];
+        }
+        return {}; // unterminated string: same result as a failed regex match
+    }
+    return {};
+}
 std::wstring stringField(const std::wstring& obj,const std::wstring& key) {
-    const std::wregex re(L"\\\""+key+L"\\\"\\s*:\\s*\\\"((?:\\\\.|[^\\\"\\\\])*)\\\""); std::wsmatch m;
-    return std::regex_search(obj,m,re)?unescape(m[1].str()):L"";
+    return unescape(rawStringField(obj,key));
 }
 unsigned long long numberField(const std::wstring& obj,const std::wstring& key,unsigned long long fallback=0) {
     const std::wregex re(L"\\\""+key+L"\\\"\\s*:\\s*(0[xX][0-9a-fA-F]+|[0-9]+)"); std::wsmatch m;
-    if(!std::regex_search(obj,m,re)) return fallback;
     try {
+        if(!std::regex_search(obj,m,re)) return fallback;
         const auto token=m[1].str();
         const bool hex=token.size()>2 && token[0]==L'0' && (token[1]==L'x'||token[1]==L'X');
         return std::stoull(token,nullptr,hex?16:10);
     } catch(...) { return fallback; }
 }
+std::vector<std::wstring> quotedStrings(const std::wstring& part) {
+    std::vector<std::wstring> out;
+    for(std::size_t i=0;i<part.size();) {
+        if(part[i]!=L'"') { ++i; continue; }
+        std::wstring cur; std::size_t j=i+1; bool closed=false;
+        for(;j<part.size();++j) {
+            if(part[j]==L'\\') { cur+=part[j]; if(++j>=part.size()) break; cur+=part[j]; }
+            else if(part[j]==L'"') { closed=true; break; }
+            else cur+=part[j];
+        }
+        if(!closed) break;
+        out.push_back(std::move(cur)); i=j+1;
+    }
+    return out;
+}
 std::vector<std::wstring> stringArray(const std::wstring& obj,const std::wstring& key) {
     std::vector<std::wstring> out; const auto p=obj.find(L"\""+key+L"\""); if(p==std::wstring::npos) return out;
     const auto a=obj.find(L'[',p), b=obj.find(L']',a); if(a==std::wstring::npos||b==std::wstring::npos) return out;
-    const std::wstring part=obj.substr(a,b-a+1); const std::wregex re(L"\\\"((?:\\\\.|[^\\\"\\\\])*)\\\"");
-    for(std::wsregex_iterator i(part.begin(),part.end(),re),e;i!=e;++i) out.push_back(unescape((*i)[1].str()));
+    for(auto& raw:quotedStrings(obj.substr(a,b-a+1))) out.push_back(unescape(raw));
     return out;
 }
 std::wstring fromUtf8(const std::string& bytes) {
