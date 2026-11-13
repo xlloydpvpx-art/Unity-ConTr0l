@@ -1,0 +1,21 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://unify-control.local/schemas/plugin-manifest-1.json",
+  "title":"UNIFY CONTROL plugin manifest (declarative only)",
+  "type":"object",
+  "required":["id","name","version","apiVersion","vendor","supportedDevices","capabilities","protocol","publisherSignature"],
+  "properties":{
+    "id":{"type":"string","pattern":"^[a-z0-9][a-z0-9._-]{2,63}$"},
+    "name":{"type":"string","minLength":1,"maxLength":100},
+    "version":{"type":"string","pattern":"^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "apiVersion":{"const":1},
+    "vendor":{"type":"string","minLength":1},
+    "supportedDevices":{"type":"array","minItems":1,"items":{"type":"object","required":["vid","pid"],"properties":{"vid":{"type":"string","pattern":"^[0-9A-Fa-f]{4}$"},"pid":{"type":"string","pattern":"^[0-9A-Fa-f]{4}$"},"revision":{"type":"string","pattern":"^[0-9A-Fa-f]{4}$"}} ,"additionalProperties":false}},
+    "capabilities":{"type":"array","uniqueItems":true,"items":{"enum":["rgb", "per_key_rgb", "rgb_effects", "dpi", "dpi_xy", "polling_rate", "lift_off_distance", "angle_snapping", "motion_sync", "ripple_control", "sensor_calibration", "button_remap", "key_mapping", "macros", "debounce_time", "scroll_settings", "profiles", "keyboard_layers", "tap_hold", "socd", "rapid_trigger", "adjustable_actuation", "dks", "mod_tap", "snap_tap", "nkro_mode", "battery_level", "power_management", "onboard_memory", "firmware_version", "firmware_update", "device_reset", "wireless_mode"]}},
+    "protocol":{"type":"string","enum":["public","documented","researched_authorized"]},
+    "publisherSignature":{"type":"string","minLength":1},
+    "minimumCoreVersion":{"type":"string"},
+    "entryPoint":{"type":"string","description":"Reserved; native code loading is disabled until signed ABI and sandbox are implemented."}
+  },
+  "additionalProperties":false
+}

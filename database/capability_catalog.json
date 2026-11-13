@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "catalogVersion": "1.1.0",
+  "policy": "This is a vocabulary of possible controls, not a claim that any connected device supports them. A capability becomes available only after exact model/revision evidence, a tested adapter and a safe implementation exist.",
+  "categories": [
+    {"id":"mouse_sensor","label":"Mouse sensor and tracking","capabilities":[
+      {"id":"DPI","label":"DPI / CPI stages","operations":["READ","WRITE"]},
+      {"id":"DPI_XY","label":"Independent X/Y DPI","operations":["READ","WRITE"]},
+      {"id":"POLLING_RATE","label":"USB / wireless polling rate","operations":["READ","WRITE"]},
+      {"id":"LIFT_OFF_DISTANCE","label":"Lift-off distance","operations":["READ","WRITE"]},
+      {"id":"ANGLE_SNAPPING","label":"Angle snapping","operations":["READ","WRITE"]},
+      {"id":"MOTION_SYNC","label":"Motion Sync","operations":["READ","WRITE"]},
+      {"id":"RIPPLE_CONTROL","label":"Ripple control","operations":["READ","WRITE"]},
+      {"id":"ASYMMETRIC_CUTOFF","label":"Asymmetric cutoff","operations":["READ","WRITE"]},
+      {"id":"SENSOR_CALIBRATION","label":"Surface / sensor calibration","operations":["READ","WRITE"]}
+    ]},
+    {"id":"mouse_controls","label":"Mouse buttons and behavior","capabilities":[
+      {"id":"BUTTON_REMAP","label":"Button remapping","operations":["READ","WRITE"]},
+      {"id":"MACROS","label":"Hardware / software macros","operations":["READ","WRITE"]},
+      {"id":"DEBOUNCE_TIME","label":"Debounce time","operations":["READ","WRITE"]},
+      {"id":"SCROLL_SETTINGS","label":"Scroll wheel settings","operations":["READ","WRITE"]},
+      {"id":"MOUSE_PROFILES","label":"On-device profiles","operations":["READ","WRITE"]},
+      {"id":"BATTERY_LEVEL","label":"Battery level","operations":["READ"]},
+      {"id":"POWER_MANAGEMENT","label":"Sleep / power settings","operations":["READ","WRITE"]}
+    ]},
+    {"id":"keyboard_keys","label":"Keyboard mapping and behavior","capabilities":[
+      {"id":"KEY_REMAP","label":"Key remapping","operations":["READ","WRITE"]},
+      {"id":"KEYBOARD_MACROS","label":"Keyboard macros","operations":["READ","WRITE"]},
+      {"id":"LAYOUT_SETTINGS","label":"Layout / layers","operations":["READ","WRITE"]},
+      {"id":"TAP_HOLD","label":"Tap-hold / dual function","operations":["READ","WRITE"]},
+      {"id":"SOCD","label":"SOCD / last-input priority","operations":["READ","WRITE"]},
+      {"id":"RAPID_TRIGGER","label":"Rapid Trigger","operations":["READ","WRITE"]},
+      {"id":"ADJUSTABLE_ACTUATION","label":"Adjustable actuation point","operations":["READ","WRITE"]},
+      {"id":"DKS","label":"Dynamic Keystroke (DKS)","operations":["READ","WRITE"]},
+      {"id":"MT","label":"Mod-Tap","operations":["READ","WRITE"]},
+      {"id":"SNAP_TAP","label":"Snap Tap / SOCD variants","operations":["READ","WRITE"]},
+      {"id":"NKRO_MODE","label":"NKRO / rollover mode","operations":["READ","WRITE"]},
+      {"id":"KEYBOARD_PROFILES","label":"On-device keyboard profiles","operations":["READ","WRITE"]}
+    ]},
+    {"id":"lighting","label":"Lighting and effects","capabilities":[
+      {"id":"RGB","label":"RGB lighting","operations":["READ","WRITE"]},
+      {"id":"PER_KEY_RGB","label":"Per-key RGB","operations":["READ","WRITE"]},
+      {"id":"RGB_EFFECTS","label":"Lighting effects / animations","operations":["READ","WRITE"]},
+      {"id":"RGB_BRIGHTNESS","label":"Lighting brightness / speed","operations":["READ","WRITE"]},
+      {"id":"BACKLIGHT","label":"Backlight control","operations":["READ","WRITE"]}
+    ]},
+    {"id":"device_system","label":"Device and firmware","capabilities":[
+      {"id":"PROFILE_SWITCH","label":"Profile switching","operations":["READ","WRITE"]},
+      {"id":"ONBOARD_MEMORY","label":"Onboard memory management","operations":["READ","WRITE"]},
+      {"id":"FIRMWARE_VERSION","label":"Firmware version","operations":["READ"]},
+      {"id":"FIRMWARE_UPDATE","label":"Firmware update","operations":["WRITE"]},
+      {"id":"DEVICE_RESET","label":"Factory reset","operations":["WRITE"]},
+      {"id":"WIRELESS_MODE","label":"Wireless mode / pairing","operations":["READ","WRITE"]},
+      {"id":"BATTERY_HEALTH","label":"Battery health / charging state","operations":["READ"]}
+    ]}
+  ]
+}

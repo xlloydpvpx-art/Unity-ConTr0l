@@ -1,0 +1,11 @@
+UNIFY CONTROL 1.7.0
+Release type: Windows x64 build pipeline and diagnostics hardening
+Base: UNIFY CONTROL 1.6.0
+Language: C++20
+Platforms: Windows 10/11 x64 application; portable core tests
+Security posture: discovery only; no generic device writes or endpoint transfers
+New release infrastructure: pinned WebView2 SDK acquisition, GitHub Actions Windows build, Inno Setup installer, Evergreen Runtime bootstrapper
+Portable tests: C++ core unit tests and frontend/database validation
+Local validation: Linux portable build and CTest PASS
+Windows build status: NOT RUN — requires GitHub Windows runner or Windows/MSVC host
+Physical hardware validation: NOT PERFORMED

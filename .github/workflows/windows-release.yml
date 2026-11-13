@@ -1,0 +1,91 @@
+name: Windows x64 build and release artifacts
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+jobs:
+  build-windows-x64:
+    runs-on: windows-2022
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure MSVC environment
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Install NuGet CLI
+        shell: pwsh
+        run: |
+          Invoke-WebRequest https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -OutFile "$env:RUNNER_TEMP/nuget.exe"
+          "$env:RUNNER_TEMP" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          Copy-Item "$env:RUNNER_TEMP/nuget.exe" "$env:RUNNER_TEMP/nuget"
+
+      - name: Acquire pinned WebView2 SDK
+        shell: pwsh
+        run: |
+          & "$env:RUNNER_TEMP/nuget.exe" install Microsoft.Web.WebView2 -Version 1.0.2903.40 -OutputDirectory packages -NonInteractive
+          if ($LASTEXITCODE -ne 0) { throw 'WebView2 SDK acquisition failed' }
+          $sdk = Get-ChildItem packages -Directory -Filter 'Microsoft.Web.WebView2.*' | Select-Object -First 1
+          if (-not $sdk) { throw 'WebView2 SDK package missing' }
+          "WEBVIEW2_SDK_DIR=$($sdk.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Build, test and stage application
+        shell: pwsh
+        run: .\build-windows.ps1 -WebView2SdkDir "$env:WEBVIEW2_SDK_DIR" -Configuration Release
+
+      - name: Install Inno Setup
+        shell: pwsh
+        run: choco install innosetup --yes --no-progress
+
+      - name: Build Windows installer
+        shell: pwsh
+        run: |
+          $iscc = 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe'
+          if (-not (Test-Path $iscc)) { throw 'Inno Setup compiler not found' }
+          & $iscc '.\packaging\UNIFY_CONTROL.iss'
+          if ($LASTEXITCODE -ne 0) { throw 'Installer compilation failed' }
+
+      - name: Create portable release ZIP
+        shell: pwsh
+        run: Compress-Archive -Path '.\dist\UNIFY_CONTROL_RELEASE\*' -DestinationPath '.\dist\UNIFY_CONTROL_1.7.0_Windows_x64.zip' -Force
+
+      - name: Create source ZIP
+        shell: pwsh
+        run: |
+          $exclude = @('.git', 'build', 'build-validation', 'packages', 'dist')
+          Get-ChildItem -Force | Where-Object { $_.Name -notin $exclude } | Compress-Archive -DestinationPath '.\dist\UNIFY_CONTROL_1.7.0_SOURCE.zip' -Force
+
+      - name: Write Windows build report
+        shell: pwsh
+        run: |
+          @"
+          UNIFY CONTROL 1.7.0 — Windows x64 CI report
+          Runner: $env:ImageOS / $env:ImageVersion
+          Compiler: MSVC x64
+          Configuration: Release
+          CTest: passed (workflow step completed)
+          Application: dist/UNIFY_CONTROL_RELEASE/UNIFY_CONTROL.exe
+          Installer: dist/UNIFY_CONTROL_Setup_1.7.0_x64.exe
+          Runtime: WebView2 Evergreen bootstrapper bundled
+          Physical peripheral tests: NOT PERFORMED by CI
+          "@ | Set-Content '.\dist\WINDOWS_BUILD_REPORT.txt'
+
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: UNIFY_CONTROL_1.7.0_Windows_x64
+          path: |
+            dist/UNIFY_CONTROL_RELEASE/**
+            dist/UNIFY_CONTROL_Setup_1.7.0_x64.exe
+            dist/UNIFY_CONTROL_1.7.0_Windows_x64.zip
+            dist/UNIFY_CONTROL_1.7.0_SOURCE.zip
+            dist/WINDOWS_BUILD_REPORT.txt
+          if-no-files-found: error
+          retention-days: 30

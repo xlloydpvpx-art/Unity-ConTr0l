@@ -1,0 +1,10 @@
+UNIFY CONTROL — Project License
+
+Copyright (c) 2026 UNIFY CONTROL contributors.
+
+Unless a separate third-party license is included with a component, the project
+source is provided for evaluation and development. Redistribution or commercial
+use of project source and branding requires permission from the project owner.
+
+Third-party dependencies retain their respective licenses. Microsoft WebView2
+Runtime and SDK are governed by Microsoft's license terms.
