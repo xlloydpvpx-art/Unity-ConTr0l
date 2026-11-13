@@ -6,6 +6,7 @@
 #include <usbiodef.h>
 #include <winrt/base.h>
 #include <winrt/Windows.Foundation.h>
+#include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Windows.Devices.Enumeration.h>
 #include <winrt/Windows.Devices.Bluetooth.h>
 #include <winrt/Windows.Devices.Bluetooth.GenericAttributeProfile.h>
@@ -16,6 +17,9 @@
 #include <memory>
 #include <thread>
 #include <utility>
+#include <cstdint>
+#include <vector>
+#include <string>
 
 #pragma comment(lib, "winusb.lib")
 #pragma comment(lib, "runtimeobject.lib")
