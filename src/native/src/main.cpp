@@ -18,6 +18,10 @@
 #include "unify/observation_store.hpp"
 #include "unify/device_database.hpp"
 #include "unify/protocol_research.hpp"
+#include "unify/system_settings.hpp"
+#include "unify/via_hid.hpp"
+#include <mutex>
+#include <vector>
 #include <shlobj.h>
 
 #pragma comment(lib, "ole32.lib")
@@ -25,6 +29,7 @@
 #pragma comment(lib, "hid.lib")
 
 static constexpr UINT WM_SCAN_DONE = WM_APP + 1;
+static constexpr UINT WM_VIA_DONE = WM_APP + 2;
 static constexpr UINT_PTR TIMER_RESCAN = 1;
 
 static HWND g_hwnd{};
@@ -39,6 +44,8 @@ static std::filesystem::path appDir;
 static std::filesystem::path observationsFile;
 static std::filesystem::path webViewUserData;
 static HDEVNOTIFY g_deviceNotify{};
+// Windows settings as found when the app started, so the user can always go back.
+static std::vector<unify::winsettings::Value> g_originalSettings;
 
 // Scan state. Only the UI thread touches these; the worker thread only reads the (immutable after load)
 // database/research objects and writes the observation file.
@@ -46,9 +53,14 @@ static std::thread g_scanThread;
 static bool g_scanning = false;
 static bool g_rescanPending = false;
 
+// Last scan, in the same order as the JSON "devices" array. The UI refers to devices by index only.
+static std::mutex g_lastScanMutex;
+static std::vector<unify::DeviceInfo> g_lastScan;
+
 static std::wstring buildScanJson() {
     auto devices = g_scanner.scan();
     for (auto& device : devices) g_database.identify(device);
+    { std::lock_guard<std::mutex> lock(g_lastScanMutex); g_lastScan = devices; }
     unify::ObservationStore::saveUnknown(devices, observationsFile);
     auto json = unify::DeviceScanner::toJson(devices, observationsFile.wstring(), g_database.manufacturerCount(), g_database.verifiedDeviceCount(), g_database.loadStatus());
     const auto marker = json.rfind(L"}");
@@ -80,6 +92,61 @@ static void finishScan(std::wstring* rawJson) {
     if (json && g_webview) g_webview->PostWebMessageAsJson(json->c_str());
     if (g_rescanPending) { g_rescanPending = false; startScan(); }
 }
+
+// Layer 1 (Windows-level) settings. These run on the UI thread: each call is a quick, documented Win32 API.
+static void postSettings(const std::wstring& key, bool ok, const std::wstring& error) {
+    if (!g_webview) return;
+    const std::wstring json = L"{\"type\":\"systemSettings\",\"settings\":" + unify::winsettings::toJson(unify::winsettings::readAll())
+        + L",\"originals\":" + unify::winsettings::toJson(g_originalSettings)
+        + L",\"result\":{\"key\":\"" + key + L"\",\"ok\":" + (ok ? L"true" : L"false") + L",\"error\":\"" + error + L"\"}}";
+    g_webview->PostWebMessageAsJson(json.c_str());
+}
+static void handleSettingsCommand(const std::wstring& command) {
+    if (command == L"settings:get") { postSettings(L"", true, L""); return; }
+    if (command == L"settings:restore") {
+        bool ok = true; std::wstring error;
+        for (const auto& original : g_originalSettings) {
+            std::wstring one;
+            if (!unify::winsettings::write(original.key, original.value, one)) { ok = false; error = one; }
+        }
+        postSettings(L"*", ok, error);
+        return;
+    }
+    constexpr wchar_t prefix[] = L"settings:set:";
+    if (command.compare(0, 13, prefix) != 0) return;
+    const std::wstring rest = command.substr(13);
+    const auto sep = rest.find(L':');
+    if (sep == std::wstring::npos) { postSettings(L"", false, L"BAD_COMMAND"); return; }
+    const std::wstring key = rest.substr(0, sep), valueText = rest.substr(sep + 1);
+    if (!unify::winsettings::isKnownKey(key)) { postSettings(L"", false, L"UNKNOWN_SETTING"); return; }
+    wchar_t* end = nullptr; const long value = wcstol(valueText.c_str(), &end, 10);
+    if (valueText.empty() || !end || *end != L'\0') { postSettings(key, false, L"BAD_VALUE"); return; }
+    std::wstring error;
+    const bool ok = unify::winsettings::write(key, static_cast<int>(value), error);
+    postSettings(key, ok, error);
+}
+
+// Read-only VIA probe (QMK keyboards). Runs on a short-lived thread because a silent device can take ~1 s to time out.
+static void startViaProbe(long index) {
+    if (!g_hwnd) return;
+    std::wstring path;
+    {
+        std::lock_guard<std::mutex> lock(g_lastScanMutex);
+        if (index >= 0 && static_cast<size_t>(index) < g_lastScan.size()) {
+            const auto& d = g_lastScan[static_cast<size_t>(index)];
+            if (d.usagePage == unify::via::kUsagePage && d.usage == unify::via::kUsage) path = d.path; // only genuine VIA raw-HID interfaces
+        }
+    }
+    const HWND hwnd = g_hwnd;
+    std::thread([hwnd, index, path]() {
+        unify::via::ProbeResult r;
+        if (path.empty()) r.error = L"NOT_VIA_INTERFACE"; else r = unify::via::probe(path);
+        auto* json = new std::wstring(L"{\"type\":\"viaProbe\",\"index\":" + std::to_wstring(index) + L",\"ok\":" + (r.ok ? L"true" : L"false")
+            + L",\"protocolVersion\":" + std::to_wstring(r.protocolVersion) + L",\"layerCount\":" + std::to_wstring(r.layerCount)
+            + L",\"error\":\"" + r.error + L"\"}");
+        if (!PostMessageW(hwnd, WM_VIA_DONE, 0, reinterpret_cast<LPARAM>(json))) delete json;
+    }).detach();
+}
 static void resizeWebView() {
     if (!g_controller || !g_hwnd) return;
     RECT r{}; GetClientRect(g_hwnd, &r);
@@ -101,6 +168,11 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
         return TRUE;
     case WM_TIMER: if (wp == TIMER_RESCAN) { KillTimer(hwnd, TIMER_RESCAN); startScan(); } return 0;
     case WM_SCAN_DONE: finishScan(reinterpret_cast<std::wstring*>(lp)); return 0;
+    case WM_VIA_DONE: {
+        std::unique_ptr<std::wstring> json(reinterpret_cast<std::wstring*>(lp));
+        if (json && g_webview) g_webview->PostWebMessageAsJson(json->c_str());
+        return 0;
+    }
     case WM_DESTROY:
         if (g_deviceNotify) { UnregisterDeviceNotification(g_deviceNotify); g_deviceNotify = nullptr; }
         PostQuitMessage(0); return 0;
@@ -120,6 +192,7 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int show) {
         webViewUserData = appDir/L"WebView2";
     }
     { std::error_code ec; std::filesystem::create_directories(webViewUserData, ec); }
+    g_originalSettings = unify::winsettings::readAll();
     g_database.load(appDir / L"database" / L"devices.json");
     g_protocolResearch.load(appDir / L"database" / L"protocol_research.json");
     WNDCLASSW wc{}; wc.lpfnWndProc=WndProc; wc.hInstance=instance; wc.lpszClassName=L"UnifyControlWindow"; wc.hCursor=LoadCursor(nullptr,IDC_ARROW); wc.hbrBackground=(HBRUSH)(COLOR_WINDOW+1);
@@ -142,6 +215,8 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int show) {
                 LPWSTR raw=nullptr; if(SUCCEEDED(args->TryGetWebMessageAsString(&raw)) && raw) {
                     std::wstring command(raw); CoTaskMemFree(raw);
                     if(command==L"scan") startScan();
+                    else if(command.compare(0,9,L"settings:")==0) handleSettingsCommand(command);
+                    else if(command.compare(0,10,L"via:probe:")==0) { wchar_t* end=nullptr; const long idx=wcstol(command.c_str()+10,&end,10); if(end && *end==L'\0' && end!=command.c_str()+10) startViaProbe(idx); }
                 }
                 return S_OK;
             }).Get(), &messageToken);

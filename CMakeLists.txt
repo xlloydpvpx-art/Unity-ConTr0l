@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 option(UNIFY_BUILD_TESTS "Build portable device-manager tests" ON)
 
-add_library(unify_device_core STATIC src/native/src/device_manager.cpp src/native/src/device_database.cpp src/native/src/protocol_research.cpp src/native/src/capability_engine.cpp src/native/src/adapter_registry.cpp src/native/src/adapter_sdk.cpp src/native/src/universal_discovery.cpp src/native/src/hid_report_parser.cpp src/native/src/transport_registry.cpp src/native/src/evidence_engine.cpp src/native/src/diagnostic_engine.cpp src/native/src/usb_descriptor_parser.cpp src/native/src/transport_metadata.cpp)
+add_library(unify_device_core STATIC src/native/src/device_manager.cpp src/native/src/device_database.cpp src/native/src/protocol_research.cpp src/native/src/capability_engine.cpp src/native/src/adapter_registry.cpp src/native/src/adapter_sdk.cpp src/native/src/universal_discovery.cpp src/native/src/hid_report_parser.cpp src/native/src/transport_registry.cpp src/native/src/evidence_engine.cpp src/native/src/diagnostic_engine.cpp src/native/src/usb_descriptor_parser.cpp src/native/src/transport_metadata.cpp src/native/src/standards.cpp src/native/src/via_protocol.cpp)
 target_include_directories(unify_device_core PUBLIC src/native/include)
 if(MSVC)
   target_compile_options(unify_device_core PRIVATE /utf-8 /W4 /permissive-)
@@ -37,7 +37,9 @@ if(WIN32)
     src/native/src/main.cpp
     src/native/src/device_scanner.cpp
     src/native/src/observation_store.cpp
-    src/native/src/windows_transport_discovery.cpp)
+    src/native/src/windows_transport_discovery.cpp
+    src/native/src/system_settings.cpp
+    src/native/src/via_hid.cpp)
   target_include_directories(UNIFY_CONTROL PRIVATE src/native/include "${WEBVIEW2_SDK_DIR}/build/native/include")
   target_link_directories(UNIFY_CONTROL PRIVATE "${WEBVIEW2_SDK_DIR}/build/native/x64")
   target_link_libraries(UNIFY_CONTROL PRIVATE unify_device_core setupapi hid cfgmgr32 winusb runtimeobject windowsapp ole32 oleaut32 shell32 shlwapi user32 uuid "${WEBVIEW2_SDK_DIR}/build/native/x64/WebView2LoaderStatic.lib")

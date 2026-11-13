@@ -13,6 +13,8 @@
 #include "unify/diagnostic_engine.hpp"
 #include "unify/usb_descriptor_parser.hpp"
 #include "unify/transport_metadata.hpp"
+#include "unify/standards.hpp"
+#include "unify/via_protocol.hpp"
 #include <filesystem>
 #include <fstream>
 #include <cassert>
@@ -203,6 +205,48 @@ int main() {
         revDb.identify(unknownRevision);
         assert(unknownRevision.identificationStatus != L"EXACT MODEL MATCH");
         std::filesystem::remove(revFile);
+    }
+    // Regression: MSVC std::regex throws error_stack on long string values; the loader must not use it for them.
+    {
+        const auto longFile = std::filesystem::temp_directory_path() / "unify_long_string_test.json";
+        const std::string longText(5000, 'x');
+        { std::ofstream f(longFile); f << "{\"schemaVersion\":3,\"manufacturers\":[{\"name\":\"LongCo\",\"aliases\":[\"" << longText << "\",\"Short\"],\"status\":\"CATALOG_ONLY\"}],\"devices\":[{\"vid\":4660,\"pid\":22136,\"manufacturer\":\"V\",\"model\":\"M\",\"evidence\":\"" << longText << "\",\"status\":\"VERIFIED\"}]}"; }
+        DeviceDatabase longDb; assert(longDb.load(longFile));
+        assert(longDb.verifiedDeviceCount() == 1 && longDb.manufacturerCount() == 1);
+        std::filesystem::remove(longFile);
+    }
+
+    // Open-standard recognition (layer 2): detection only, with an honest support level per standard.
+    {
+        using namespace unify::standards;
+        auto via = detect(0x1234, 0x5678, 0xFF60, 0x61);
+        assert(via.size() == 1 && std::wstring(via[0].code) == L"VIA_RAW_HID" && via[0].support == Support::ReadOnlyProbe);
+        auto kb = detect(0x1234, 0x5678, 0x01, 0x06);
+        assert(kb.size() == 1 && std::wstring(kb[0].code) == L"WINDOWS_HID" && kb[0].support == Support::AppliesNow);
+        assert(std::wstring(detect(0x1234, 1, 0x59, 0x01)[0].code) == L"HID_LAMPARRAY");
+        assert(std::wstring(detect(0x046D, 1, 0xFF43, 0x0202)[0].code) == L"LOGITECH_HIDPP");
+        auto vendor = detect(0x373E, 0x47, 0xFF01, 0x01); // private channel, not Logitech
+        assert(vendor.size() == 1 && vendor[0].support == Support::NeedsDocumentation);
+        assert(detect(0x1234, 1, 0x0C, 0x01).empty()); // consumer control: nothing to claim
+        DeviceInfo viaDevice; viaDevice.usagePage = 0xFF60; viaDevice.usage = 0x61;
+        assert(DeviceScanner::toJson({viaDevice}).find(L"VIA_RAW_HID") != std::wstring::npos);
+    }
+    // VIA codec: frames, reply parsing and the read-only allow-list.
+    {
+        using namespace unify::via;
+        assert(buildGetProtocolVersion()[0] == 0x01 && buildGetLayerCount()[0] == 0x11);
+        auto kc = buildGetKeycode(2, 3, 4); assert(kc[0] == 0x04 && kc[1] == 2 && kc[2] == 3 && kc[3] == 4);
+        Frame reply{}; std::uint16_t version = 0; reply[0] = 0x01; reply[1] = 0x00; reply[2] = 0x0D;
+        assert(parseProtocolVersion(reply, version) && version == 0x000D);
+        Frame unhandled{}; unhandled[0] = kUnhandled; assert(!parseProtocolVersion(unhandled, version));
+        Frame empty{}; assert(!parseProtocolVersion(empty, version)); // all zeros is not a VIA reply
+        Frame layers{}; std::uint8_t count = 0; layers[0] = 0x11; layers[1] = 4; assert(parseLayerCount(layers, count) && count == 4);
+        layers[1] = 99; assert(!parseLayerCount(layers, count));
+        Frame key{}; std::uint16_t code = 0; key[0] = 0x04; key[1] = 2; key[2] = 3; key[3] = 4; key[4] = 0x00; key[5] = 0x29;
+        assert(parseKeycode(key, 2, 3, 4, code) && code == 0x0029);
+        assert(!parseKeycode(key, 2, 3, 5, code)); // echoed position must match the request
+        assert(isAllowedReadCommand(0x01) && isAllowedReadCommand(0x04) && isAllowedReadCommand(0x11));
+        for (std::uint8_t cmd : {0x05, 0x06, 0x0A, 0x0B, 0x13}) assert(!isAllowedReadCommand(cmd)); // set / reset / eeprom / bootloader / set_buffer
     }
     // Hostile device strings must stay valid JSON strings (control characters and quotes).
     DeviceInfo hostile; hostile.product = L"</script>\"\\\n\x01 x"; hostile.manufacturer = L"\t";

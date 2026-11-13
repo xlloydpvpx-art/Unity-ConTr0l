@@ -1,4 +1,5 @@
 #include "unify/device_scanner.hpp"
+#include "unify/standards.hpp"
 #include "unify/universal_discovery.hpp"
 #include "unify/evidence_engine.hpp"
 #include "unify/diagnostic_engine.hpp"
@@ -97,7 +98,7 @@ std::wstring DeviceScanner::toJson(const std::vector<DeviceInfo>& devices, const
         o << L"] ,\"universalProfile\":{\"transport\":\"" << universal::Classifier::transportName(universalProfile.transport)
           << L"\",\"function\":\"" << universal::Classifier::functionName(universalProfile.function)
           << L"\",\"identity\":\"" << universal::Classifier::identityName(universalProfile.identity)
-          << L"\",\"configurationProtocolKnown\":false,\"hardwareWritesAllowed\":false,\"status\":\"" << jsonEscape(universalProfile.status) << L"\"},\"path\":\"" << jsonEscape(d.path) << L"\",\"usbInterfacePath\":\"" << jsonEscape(d.usbInterfacePath) << L"\",\"hidDescriptorAnalysis\":\"" << jsonEscape(d.hidDescriptorAnalysis) << L"\",\"instanceId\":\"" << jsonEscape(d.instanceId)
+          << L"\",\"configurationProtocolKnown\":false,\"hardwareWritesAllowed\":false,\"status\":\"" << jsonEscape(universalProfile.status) << L"\"},\"standards\":" << standards::toJson(standards::detect(d.vid,d.pid,d.usagePage,d.usage)) << L",\"path\":\"" << jsonEscape(d.path) << L"\",\"usbInterfacePath\":\"" << jsonEscape(d.usbInterfacePath) << L"\",\"hidDescriptorAnalysis\":\"" << jsonEscape(d.hidDescriptorAnalysis) << L"\",\"instanceId\":\"" << jsonEscape(d.instanceId)
           << L"\",\"containerId\":\"" << jsonEscape(d.containerId) << L"\",\"parentInstanceId\":\"" << jsonEscape(d.parentInstanceId)
           << L"\",\"location\":\"" << jsonEscape(d.location) << L"\",\"manufacturer\":\"" << jsonEscape(d.manufacturer)
           << L"\",\"product\":\"" << jsonEscape(d.product) << L"\",\"serial\":\"" << jsonEscape(d.serial)

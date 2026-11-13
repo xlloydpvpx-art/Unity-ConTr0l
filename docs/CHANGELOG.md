@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- Fix: Windows test crash (exit code 0xc0000409). MSVC `std::regex` throws `regex_error` on long JSON strings; the database and protocol-research loaders now use a plain scanner. Regression test added.
+- New: layer-1 universal control. Reversible Windows settings for any mouse/keyboard (pointer speed, pointer precision, button swap, double-click time, wheel lines, key repeat delay/rate) via `system_settings.cpp`, with read-back verification and restore-to-original.
+- New: profiles can store and re-apply the Windows settings.
+- New: layer-2 open-standard recognition (`standards.cpp`): QMK/VIA raw HID, HID LampArray (Dynamic Lighting), Logitech HID++ and vendor-private channels, each with an honest support level shown per device.
+- New: read-only VIA probe (`via_protocol.cpp`, `via_hid.cpp`). Command IDs checked against qmk_firmware `via.h`/`via.c`; only protocol-version and layer-count reads can be sent, and destructive commands have no builder.
+- UI: complete visual redesign (Spanish), device cards with expandable technical details, control studios for mouse and keyboard, layered-control overview.
+
 ## 1.8.0
 - Fixed Windows build: added objbase.h and initguid.h to the HID scanner, and replaced WinRT range-for loops with indexed loops in BLE discovery.
 - Device list now groups HID interfaces of the same physical device (same Container ID) into one row, showing interface numbers.
